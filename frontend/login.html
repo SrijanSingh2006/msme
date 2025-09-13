@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Signup</title>
+</head>
+<body>
+  <h2>Signup</h2>
+  <form id="signupForm">
+    <input type="text" id="signupName" placeholder="Name" required /><br />
+    <input type="email" id="signupEmail" placeholder="Email" required /><br />
+    <input type="password" id="signupPassword" placeholder="Password" required /><br />
+    <button type="submit">Signup</button>
+  </form>
+
+  <h2>Login</h2>
+  <form id="loginForm">
+    <input type="email" id="loginEmail" placeholder="Email" required /><br />
+    <input type="password" id="loginPassword" placeholder="Password" required /><br />
+    <button type="submit">Login</button>
+  </form>
+
+  <script>
+    // ✅ Signup handler
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("signupName").value;
+      const email = document.getElementById("signupEmail").value;
+      const password = document.getElementById("signupPassword").value;
+
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Signup successful! You can now log in.");
+      } else {
+        alert(data.message || "Signup failed.");
+      }
+    });
+
+    // ✅ Login handler
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("loginEmail").value;
+      const password = document.getElementById("loginPassword").value;
+
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("Login successful!");
+        localStorage.setItem("token", data.token); // save JWT
+        window.location.href = "/dashboard.html"; // redirect to dashboard
+      } else {
+        alert(data.message || "Invalid credentials.");
+      }
+    });
+  </script>
+</body>
+</html>
